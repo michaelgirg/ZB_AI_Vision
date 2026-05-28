@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Simulator/build outputs
+work/
+*.wlf
+*.mpf
+*.mti
+*.cr.mti
+modelsim.ini
+transcript
+
+# Vivado/Vitis generated projects
+*.jou
+*.log
+*.str
+*.cache/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+*.gen/
+*.xpr
+*.sdk/
+build/
+Debug/
+Release/
+
+# Large regenerated datasets/checkpoints
+generated/data/
+*.idx*
+*.pt
+

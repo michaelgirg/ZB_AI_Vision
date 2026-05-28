@@ -1,0 +1,25 @@
+{
+  "checkpoint": "generated\\model\\threshold_sobel_mlp.pt",
+  "threshold": 128,
+  "feature_mode": "threshold_sobel",
+  "input_features": 1568,
+  "hidden_features": 96,
+  "epochs": 3,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.37712112282911936,
+      "test_accuracy": 0.9323
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.19058164392312368,
+      "test_accuracy": 0.9515
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.13750885508060456,
+      "test_accuracy": 0.9594
+    }
+  ]
+}

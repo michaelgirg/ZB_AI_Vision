@@ -1,0 +1,282 @@
+{
+  "checkpoint": "generated\\model\\threshold_mlp.pt",
+  "header": "generated\\headers\\model_weights_quantized.h",
+  "golden_header": "generated\\headers\\model_quantized_golden.h",
+  "threshold": 128,
+  "feature_mode": "threshold",
+  "input_features": 784,
+  "hidden_features": 64,
+  "calibration_samples": 1024,
+  "evaluation": {
+    "samples": 10000,
+    "float_accuracy": 0.946,
+    "fixed_accuracy": 0.9468,
+    "prediction_agreement": 0.9984,
+    "max_abs_logit_error": 0.3056602478027344
+  },
+  "scales": {
+    "input": 1.0,
+    "fc1_weight": 0.003314331995220635,
+    "hidden_activation": 0.07691696497399038,
+    "fc2_weight": 0.0059824811192009395,
+    "logit": 0.0004601542907031374
+  },
+  "input_quantization": {
+    "q_max": 1
+  },
+  "requantization": {
+    "hidden_multiplier": 45183,
+    "hidden_shift": 20,
+    "hidden_real_multiplier": 0.043089739647701686
+  },
+  "sample_predictions": [
+    {
+      "sample": "sample_000",
+      "label": 7,
+      "float_prediction": 7,
+      "fixed_prediction": 7,
+      "fixed_confidence": 0.9931118488311768,
+      "fixed_logits_q": [
+        -3084,
+        -19705,
+        3872,
+        7040,
+        -15267,
+        9,
+        -28366,
+        18427,
+        -5393,
+        -1119
+      ],
+      "fixed_logits_dequant": [
+        -1.419116,
+        -9.06734,
+        1.781717,
+        3.239486,
+        -7.025176,
+        0.004141,
+        -13.052736,
+        8.479263,
+        -2.481612,
+        -0.514913
+      ]
+    },
+    {
+      "sample": "sample_001",
+      "label": 2,
+      "float_prediction": 2,
+      "fixed_prediction": 2,
+      "fixed_confidence": 0.9630652070045471,
+      "fixed_logits_q": [
+        733,
+        -1634,
+        16423,
+        8992,
+        -25754,
+        3337,
+        -187,
+        -24821,
+        2610,
+        -29433
+      ],
+      "fixed_logits_dequant": [
+        0.337293,
+        -0.751892,
+        7.557114,
+        4.137707,
+        -11.850814,
+        1.535535,
+        -0.086049,
+        -11.42149,
+        1.201003,
+        -13.543721
+      ]
+    },
+    {
+      "sample": "sample_002",
+      "label": 1,
+      "float_prediction": 1,
+      "fixed_prediction": 1,
+      "fixed_confidence": 0.9863908290863037,
+      "fixed_logits_q": [
+        -14268,
+        10964,
+        -1912,
+        -3065,
+        -6487,
+        -6119,
+        -5859,
+        -70,
+        -2602,
+        -7369
+      ],
+      "fixed_logits_dequant": [
+        -6.565481,
+        5.045132,
+        -0.879815,
+        -1.410373,
+        -2.985021,
+        -2.815684,
+        -2.696044,
+        -0.032211,
+        -1.197321,
+        -3.390877
+      ]
+    },
+    {
+      "sample": "sample_003",
+      "label": 0,
+      "float_prediction": 0,
+      "fixed_prediction": 0,
+      "fixed_confidence": 0.9987133741378784,
+      "fixed_logits_q": [
+        17504,
+        -25063,
+        -334,
+        -3505,
+        -16171,
+        979,
+        -1597,
+        -4825,
+        -6077,
+        -540
+      ],
+      "fixed_logits_dequant": [
+        8.054541,
+        -11.532847,
+        -0.153692,
+        -1.612841,
+        -7.441155,
+        0.450491,
+        -0.734866,
+        -2.220244,
+        -2.796358,
+        -0.248483
+      ]
+    },
+    {
+      "sample": "sample_004",
+      "label": 4,
+      "float_prediction": 4,
+      "fixed_prediction": 4,
+      "fixed_confidence": 0.9344767332077026,
+      "fixed_logits_q": [
+        -6856,
+        -14673,
+        -2364,
+        -9874,
+        11892,
+        -6739,
+        -3918,
+        -1711,
+        -5080,
+        5961
+      ],
+      "fixed_logits_dequant": [
+        -3.154818,
+        -6.751844,
+        -1.087805,
+        -4.543563,
+        5.472155,
+        -3.10098,
+        -1.802884,
+        -0.787324,
+        -2.337584,
+        2.74298
+      ]
+    },
+    {
+      "sample": "sample_005",
+      "label": 1,
+      "float_prediction": 1,
+      "fixed_prediction": 1,
+      "fixed_confidence": 0.9864588379859924,
+      "fixed_logits_q": [
+        -18389,
+        11998,
+        -5462,
+        -2697,
+        -8606,
+        -10603,
+        -12937,
+        2076,
+        -2166,
+        -6046
+      ],
+      "fixed_logits_dequant": [
+        -8.461778,
+        5.520931,
+        -2.513363,
+        -1.241036,
+        -3.960088,
+        -4.879016,
+        -5.953016,
+        0.95528,
+        -0.996694,
+        -2.782093
+      ]
+    },
+    {
+      "sample": "sample_006",
+      "label": 4,
+      "float_prediction": 4,
+      "fixed_prediction": 4,
+      "fixed_confidence": 0.9462583661079407,
+      "fixed_logits_q": [
+        -17494,
+        -18108,
+        -12080,
+        -4814,
+        11166,
+        -3368,
+        -9924,
+        -1638,
+        4339,
+        890
+      ],
+      "fixed_logits_dequant": [
+        -8.049939,
+        -8.332474,
+        -5.558664,
+        -2.215183,
+        5.138083,
+        -1.5498,
+        -4.566571,
+        -0.753733,
+        1.996609,
+        0.409537
+      ]
+    },
+    {
+      "sample": "sample_007",
+      "label": 9,
+      "float_prediction": 9,
+      "fixed_prediction": 9,
+      "fixed_confidence": 0.9815641045570374,
+      "fixed_logits_q": [
+        -21087,
+        -4628,
+        -7712,
+        -3281,
+        267,
+        -1665,
+        -9609,
+        -2386,
+        -3168,
+        10666
+      ],
+      "fixed_logits_dequant": [
+        -9.703274,
+        -2.129594,
+        -3.54871,
+        -1.509766,
+        0.122861,
+        -0.766157,
+        -4.421623,
+        -1.097928,
+        -1.457769,
+        4.908006
+      ]
+    }
+  ]
+}

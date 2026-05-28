@@ -1,0 +1,23 @@
+{
+  "checkpoint": "generated\\model\\threshold_mlp.pt",
+  "threshold": 128,
+  "hidden_features": 64,
+  "epochs": 3,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.4860309749762217,
+      "test_accuracy": 0.9206
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.24653705903689066,
+      "test_accuracy": 0.9385
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.19352444528738658,
+      "test_accuracy": 0.946
+    }
+  ]
+}
