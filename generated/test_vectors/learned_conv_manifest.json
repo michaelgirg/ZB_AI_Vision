@@ -1,0 +1,64 @@
+{
+  "kernel": [
+    [
+      -2,
+      -1,
+      0
+    ],
+    [
+      -1,
+      6,
+      1
+    ],
+    [
+      0,
+      1,
+      2
+    ]
+  ],
+  "bias": -128,
+  "shift": 3,
+  "relu_enable": 1,
+  "samples": [
+    {
+      "name": "sample_000",
+      "input_mem": "generated\\test_vectors\\sample_000_input.mem",
+      "conv_mem": "generated\\test_vectors\\sample_000_conv.mem"
+    },
+    {
+      "name": "sample_001",
+      "input_mem": "generated\\test_vectors\\sample_001_input.mem",
+      "conv_mem": "generated\\test_vectors\\sample_001_conv.mem"
+    },
+    {
+      "name": "sample_002",
+      "input_mem": "generated\\test_vectors\\sample_002_input.mem",
+      "conv_mem": "generated\\test_vectors\\sample_002_conv.mem"
+    },
+    {
+      "name": "sample_003",
+      "input_mem": "generated\\test_vectors\\sample_003_input.mem",
+      "conv_mem": "generated\\test_vectors\\sample_003_conv.mem"
+    },
+    {
+      "name": "sample_004",
+      "input_mem": "generated\\test_vectors\\sample_004_input.mem",
+      "conv_mem": "generated\\test_vectors\\sample_004_conv.mem"
+    },
+    {
+      "name": "sample_005",
+      "input_mem": "generated\\test_vectors\\sample_005_input.mem",
+      "conv_mem": "generated\\test_vectors\\sample_005_conv.mem"
+    },
+    {
+      "name": "sample_006",
+      "input_mem": "generated\\test_vectors\\sample_006_input.mem",
+      "conv_mem": "generated\\test_vectors\\sample_006_conv.mem"
+    },
+    {
+      "name": "sample_007",
+      "input_mem": "generated\\test_vectors\\sample_007_input.mem",
+      "conv_mem": "generated\\test_vectors\\sample_007_conv.mem"
+    }
+  ]
+}

@@ -2,8 +2,8 @@
 
 // Module: sobel_core_tb
 // Description:
-//Directed testbench for the pipelined Sobel core against Python golden
-//vectors.
+//   Directed testbench for the pipelined Sobel core against Python golden
+//   vectors.
 
 module sobel_core_tb #(
     parameter int DATA_WIDTH = 8,

@@ -117,6 +117,63 @@ Result: PASS
 
 ## Vivado Implementation
 
+### Ultra96-V1 Parallel Convolution DMA
+
+The throughput-oriented learned-convolution design is now implemented for the Ultra96-V1 ZU3EG:
+
+| Metric | Result |
+| --- | ---: |
+| PL clock target | 100 MHz |
+| Synthesis WNS | +6.985 ns |
+| Implementation WNS | +5.456 ns |
+| TNS | 0.000 ns |
+| Failing endpoints | 0 |
+| CLB LUTs | 6631 / 70560, 9.40% |
+| CLB registers | 8172 / 141120, 5.79% |
+| Block RAM tiles | 3 / 216, 1.39% |
+| DSP48E2 blocks | 9 / 360, 2.50% |
+| DRC error/critical-warning lines | 0 |
+| MODE=2 selectable-top simulation latency | 888 cycles |
+
+The exported platform is `vivado/ultra96_v1_ai_vision_dma_conv_parallel.xsa`. Physical Ultra96 DMA execution remains the next board-validation milestone.
+
+### Ultra96-V1 Four-Filter MODE=3 Checkpoint
+
+The next architecture candidate reuses one line-buffer window across four
+learned INT8 filters and packs all four activations into each 32-bit output
+beat:
+
+| Metric | Result |
+| --- | ---: |
+| Standalone vector simulation | PASS, 784/784 packed outputs |
+| Standalone cycles | 892 |
+| Selectable-top MODE=3 simulation | PASS, 784/784 packed outputs |
+| Selectable-top cycles | 888 |
+| Existing MODE=0/1/2 regressions | PASS |
+| Vector UVM tests | 4/4 PASS |
+| Targeted stream coverage | 100.00%, 26/26 bins |
+| Targeted control coverage | 100.00%, 26/26 bins |
+| UVM errors/fatals | 0/0 |
+| Assertion failures | 0 |
+| MODE=3 parallel multipliers | 36 |
+| Total design DSP48E2 | 45, including 9 for MODE=2 |
+| Synthesis WNS/TNS | +6.985 ns / 0.000 ns |
+| Synthesis failing endpoints | 0 |
+| Synthesis LUTs/registers | 11243 / 12281 |
+| Synthesis BRAM tiles | 3 |
+| Implementation WNS/TNS | +4.413 ns / 0.000 ns |
+| Implementation hold slack | +0.015 ns |
+| Implementation failing endpoints | 0 |
+| Implementation LUTs/registers | 10359 / 11903 |
+| Implementation BRAM/DSP48E2 | 3 / 45 |
+| DRC error/critical-warning lines | 0 |
+| XSA export | PASS |
+
+The separate target is `vivado/u96_dma_vec4_vivado`, with exported XSA
+`vivado/ultra96_v1_ai_vision_dma_vec4.xsa`. The checkpoint is timing-clean and
+DRC-clean. No Vitis or board work is planned until the physical Ultra96 is
+available.
+
 The cleaned Sobel-enabled implementation meets timing at the baseline 100 MHz
 PL clock and the higher-clock experiments through an actual 142.857 MHz:
 
@@ -191,20 +248,18 @@ generated/model/quantized_metrics.json
 Generated artifacts:
 
 ```text
+generated/model/threshold_sobel_mlp.pt
 generated/model/metrics_threshold_sobel.json
 generated/model/threshold_sobel_quantized_metrics.json
 generated/headers/model_weights_threshold_sobel_quantized.h
 generated/headers/model_threshold_sobel_quantized_golden.h
 ```
 
-The trained `.pt` checkpoint is intentionally excluded from the public copy and
-can be regenerated with the PyTorch training script.
-
 ARM deployment status:
 
 ```text
 Vitis app build: PASS
-Public source: vitis/advanced_classifier.c
+Source: vitis/zedboard_ai_vision_app/advanced_classifier.c
 Model input: FPGA threshold image + FPGA Sobel image
 Board validation: PASS
 8-sample board validation: PASS

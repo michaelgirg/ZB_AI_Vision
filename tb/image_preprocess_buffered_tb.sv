@@ -2,7 +2,7 @@
 
 // Module: image_preprocess_buffered_tb
 // Description:
-//Verifies the buffered preprocessing block against Python golden vectors.
+//   Verifies the buffered preprocessing block against Python golden vectors.
 
 module image_preprocess_buffered_tb #(
     parameter int DATA_WIDTH = 8,

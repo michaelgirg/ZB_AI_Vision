@@ -1,10 +1,11 @@
+`timescale 1 ns / 100 ps
 
 // Module: image_preprocess_reg_block
 // Description:
-//Register-controlled wrapper around the buffered preprocessing block.
+//   Register-controlled wrapper around the buffered preprocessing block.
 //
-//This is not a complete AXI-Lite slave. It is the protocol-neutral register
-//layer that the future AXI-Lite wrapper will drive.
+// This is not a complete AXI-Lite slave. It is the protocol-neutral register
+// layer that the future AXI-Lite wrapper will drive.
 
 module image_preprocess_reg_block #(
     parameter int DATA_WIDTH = 8,

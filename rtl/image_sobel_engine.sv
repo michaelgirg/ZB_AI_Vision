@@ -1,13 +1,14 @@
+`timescale 1 ns / 100 ps
 
 // Module: image_sobel_engine
 // Description:
-//Full-image Sobel preprocessing engine with one input pixel read per clock.
+//   Full-image Sobel preprocessing engine with one input pixel read per clock.
 //
 // Timing intent:
-//- stream input pixels through two line buffers
-//- keep Sobel arithmetic inside sobel_core pipeline
-//- write border pixels as zero
-//- reset control/valid state, not line-buffer datapath storage
+//   - stream input pixels through two line buffers
+//   - keep Sobel arithmetic inside sobel_core pipeline
+//   - write border pixels as zero
+//   - reset control/valid state, not line-buffer datapath storage
 
 module image_sobel_engine #(
     parameter int DATA_WIDTH = 8,

@@ -2,8 +2,8 @@
 
 // Module: image_preprocess_reg_block_tb
 // Description:
-//Verifies the register-controlled preprocessing block against Python
-//golden vectors using the planned software-visible register flow.
+//   Verifies the register-controlled preprocessing block against Python
+//   golden vectors using the planned software-visible register flow.
 
 module image_preprocess_reg_block_tb #(
     parameter int DATA_WIDTH = 8,

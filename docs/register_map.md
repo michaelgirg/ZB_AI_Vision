@@ -1,8 +1,8 @@
 # Preprocessing IP Register Map
 
-This is the implemented control surface for the ZedBoard PS-to-PL wrapper. The
-top-level AXI-Lite slave is `rtl/image_preprocess_axi_lite.sv`, which wraps the
-software-visible register block in `rtl/image_preprocess_reg_block.sv`.
+This is the planned control surface for the ZedBoard PS-to-PL wrapper. The
+current RTL already proves the datapath with simple host-style ports; this map
+is the target for the later AXI-Lite wrapper.
 
 ## Design Intent
 
@@ -27,7 +27,7 @@ software-visible register block in `rtl/image_preprocess_reg_block.sv`.
 | `0x20` | `INPUT_WMASK` | WO | Input buffer lane write mask |
 | `0x24` | `OUTPUT_ADDR` | RW | Output buffer beat address |
 | `0x28` | `OUTPUT_RDATA` | RO | Output buffer read data beat |
-| `0x2C` | `MODE` | RW | `0` = threshold, `1` = Sobel |
+| `0x2C` | `MODE` | RW | `0` = threshold, `1` = Sobel, `2` = single learned conv, `3` = four-filter vector conv |
 
 ## Expected Software Flow
 
@@ -51,11 +51,48 @@ That driver currently assumes one pixel per beat (`PIXELS_PER_CYCLE = 1`).
 The Vitis app checks this register before running. Sobel mode also currently
 requires `PIXELS_PER_CYCLE = 1`.
 
-## AXI-Lite Wrapper Notes
+## AXI DMA Stream Top Additions
 
-- `CTRL.start` acts like a one-cycle pulse internally, even if software writes a
-  `1`.
-- `STATUS.done` stays high until software writes `CTRL.clear_done`.
+The DMA-oriented top `axis_preprocess_axi_lite` does not use the
+`INPUT_ADDR`/`INPUT_WDATA`/`OUTPUT_ADDR` buffer registers. Pixels move through
+AXI DMA on `S_AXIS` and `M_AXIS`.
+
+It reuses the common control/status registers and adds learned convolution
+configuration registers:
+
+| Offset | Name | Access | Description |
+| --- | --- | --- | --- |
+| `0x30` | `CONV_K00` | RW | signed INT8 kernel coefficient |
+| `0x34` | `CONV_K01` | RW | signed INT8 kernel coefficient |
+| `0x38` | `CONV_K02` | RW | signed INT8 kernel coefficient |
+| `0x3C` | `CONV_K10` | RW | signed INT8 kernel coefficient |
+| `0x40` | `CONV_K11` | RW | signed INT8 kernel coefficient |
+| `0x44` | `CONV_K12` | RW | signed INT8 kernel coefficient |
+| `0x48` | `CONV_K20` | RW | signed INT8 kernel coefficient |
+| `0x4C` | `CONV_K21` | RW | signed INT8 kernel coefficient |
+| `0x50` | `CONV_K22` | RW | signed INT8 kernel coefficient |
+| `0x54` | `CONV_BIAS` | RW | signed INT32 bias |
+| `0x58` | `CONV_SHIFT` | RW | arithmetic right shift amount, bits `[4:0]` |
+| `0x5C` | `CONV_RELU_EN` | RW | bit 0 enables ReLU after shifting |
+| `0x60` | `VECTOR_CFG_INDEX` | RW | bits `[5:4]` select filter 0-3; bits `[3:0]` select entry |
+| `0x64` | `VECTOR_CFG_DATA` | RW | shadow-bank data/readback for the selected vector entry |
+| `0x68` | `VECTOR_CFG_COMMIT` | WO | bit 0 atomically commits all shadow parameters while idle |
+| `0x6C` | `VECTOR_CFG_VERSION` | RO | increments after each accepted vector commit |
+
+For MODE=3, vector entries 0-8 are signed INT8 kernel taps, entry 9 is signed
+INT32 bias, and entry 10 stores shift in bits `[4:0]` plus ReLU enable in bit 8.
+Start snapshots the committed bank into active frame configuration. Shadow
+writes and rejected busy-time commits cannot corrupt an in-flight packet.
+
+The DMA top latches threshold, mode, and convolution configuration when
+`CTRL.start` is accepted. Writes during an active frame are ignored by the
+register file so the current DMA packet cannot be corrupted mid-operation.
+
+## Notes For AXI-Lite Wrapper
+
+- `CTRL.start` should act like a one-cycle pulse internally, even if software
+  writes a `1`.
+- `STATUS.done` should stay high until software writes `CTRL.clear_done`.
 - Buffer reads may be registered, so software should treat `OUTPUT_RDATA` as
   valid one access after setting `OUTPUT_ADDR` unless the wrapper later adds a
   stronger handshake.

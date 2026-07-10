@@ -2,7 +2,7 @@
 
 // Module: image_preprocess_tb
 // Description:
-//Verifies threshold_core against Python-generated golden .mem files.
+//   Verifies threshold_core against Python-generated golden .mem files.
 
 module image_preprocess_tb #(
     parameter int IMAGE_PIXELS = 784,

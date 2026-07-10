@@ -1,15 +1,15 @@
 // Module: image_preprocess_engine
 // Description:
-//Full-image threshold preprocessing engine.
+//   Full-image threshold preprocessing engine.
 //
 // Timing intent:
-//- one read beat issued per cycle while active
-//- one processed beat written per cycle after pipeline fill
-//- countdown counters for done detection
-//- reset control/valid state, not bulky datapath values
+//   - one read beat issued per cycle while active
+//   - one processed beat written per cycle after pipeline fill
+//   - countdown counters for done detection
+//   - reset control/valid state, not bulky datapath values
 //
-//Memory is intentionally outside this module. That keeps this engine reusable
-//for testbench memories, BRAM wrappers, AXI-Lite buffers, or future DMA.
+// Memory is intentionally outside this module. That keeps this engine reusable
+// for testbench memories, BRAM wrappers, AXI-Lite buffers, or future DMA.
 
 module image_preprocess_engine #(
     parameter int DATA_WIDTH = 8,

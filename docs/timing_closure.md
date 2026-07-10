@@ -333,5 +333,6 @@ Recorded artifacts:
 
 ```text
 Bitstream/XSA: zedboard_ai_vision_pipelined_sobel
+Hardware log: docs/hardware_validation_log.md
 Results summary: docs/results.md
 ```

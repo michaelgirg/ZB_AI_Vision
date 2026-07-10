@@ -1,36 +1,40 @@
 # Python
-__pycache__/
-*.pyc
 .venv/
-venv/
+__pycache__/
+*.py[cod]
 
-# Simulator/build outputs
+# Questa
 work/
-*.wlf
-*.mpf
-*.mti
-*.cr.mti
-modelsim.ini
+work_*/
 transcript
+vsim.wlf
+*.wlf
+*.ucdb
+*_coverage_report.txt
 
-# Vivado/Vitis generated projects
+# Vivado and Vitis generated state
+.Xil/
 *.jou
 *.log
 *.str
 *.cache/
+*.gen/
 *.hw/
 *.ip_user_files/
 *.runs/
 *.sim/
-*.gen/
-*.xpr
-*.sdk/
-build/
-Debug/
-Release/
+*.srcs/
+vivado/ip_repo*/
+vivado/*_vivado/
+vitis/
+hardware/*.xsa
 
-# Large regenerated datasets/checkpoints
+# Generated datasets and local packages
 generated/data/
-*.idx*
-*.pt
+*.zip
 
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

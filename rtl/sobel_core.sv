@@ -1,13 +1,15 @@
+`timescale 1 ns / 100 ps
+
 // Module: sobel_core
 // Description:
-//Pipelined 3x3 Sobel edge stage for 8-bit grayscale pixels.
+//   Pipelined 3x3 Sobel edge stage for 8-bit grayscale pixels.
 //
 // Timing intent:
-//- stage 0 registers the incoming 3x3 window
-//- stage 1 registers Gx/Gy gradient sums
-//- stage 2 registers abs(Gx) + abs(Gy)
-//- stage 3 registers saturated uint8 output
-//- reset only valid/control state; invalid datapath values are ignored
+//   - stage 0 registers the incoming 3x3 window
+//   - stage 1 registers Gx/Gy gradient sums
+//   - stage 2 registers abs(Gx) + abs(Gy)
+//   - stage 3 registers saturated uint8 output
+//   - reset only valid/control state; invalid datapath values are ignored
 
 module sobel_core #(
     parameter int DATA_WIDTH = 8,

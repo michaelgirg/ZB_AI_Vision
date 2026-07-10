@@ -1,0 +1,150 @@
+{
+  "checkpoint": "generated\\model\\vector_conv4_cnn.pt",
+  "filters": 4,
+  "layout": "NHWC packed as filter0 in bits 7:0 through filter3 in bits 31:24",
+  "weights": [
+    [
+      [
+        29,
+        104,
+        127
+      ],
+      [
+        -115,
+        -76,
+        58
+      ],
+      [
+        -78,
+        -92,
+        -114
+      ]
+    ],
+    [
+      [
+        13,
+        -13,
+        -116
+      ],
+      [
+        -49,
+        -79,
+        15
+      ],
+      [
+        -127,
+        -26,
+        11
+      ]
+    ],
+    [
+      [
+        48,
+        -11,
+        -127
+      ],
+      [
+        -111,
+        -76,
+        -35
+      ],
+      [
+        39,
+        126,
+        94
+      ]
+    ],
+    [
+      [
+        -60,
+        -14,
+        114
+      ],
+      [
+        -74,
+        108,
+        15
+      ],
+      [
+        29,
+        127,
+        83
+      ]
+    ]
+  ],
+  "biases": [
+    11029,
+    17936,
+    257,
+    -131
+  ],
+  "shifts": [
+    9,
+    7,
+    9,
+    9
+  ],
+  "relu_enable": [
+    1,
+    1,
+    1,
+    1
+  ],
+  "weight_scales": [
+    0.005009209271520376,
+    0.005020333919674158,
+    0.004430463071912527,
+    0.003803570056334138
+  ],
+  "output_scales": [
+    0.010057706385850906,
+    0.002520010806620121,
+    0.008895674720406532,
+    0.007636972237378359
+  ],
+  "fixed_feature_classifier_accuracy": 0.9703,
+  "calibration_samples": 2048,
+  "calibration_percentile": 0.999,
+  "samples": [
+    {
+      "name": "sample_000",
+      "input_mem": "generated\\test_vectors\\sample_000_input.mem",
+      "conv4_mem": "generated\\test_vectors\\sample_000_conv4.mem"
+    },
+    {
+      "name": "sample_001",
+      "input_mem": "generated\\test_vectors\\sample_001_input.mem",
+      "conv4_mem": "generated\\test_vectors\\sample_001_conv4.mem"
+    },
+    {
+      "name": "sample_002",
+      "input_mem": "generated\\test_vectors\\sample_002_input.mem",
+      "conv4_mem": "generated\\test_vectors\\sample_002_conv4.mem"
+    },
+    {
+      "name": "sample_003",
+      "input_mem": "generated\\test_vectors\\sample_003_input.mem",
+      "conv4_mem": "generated\\test_vectors\\sample_003_conv4.mem"
+    },
+    {
+      "name": "sample_004",
+      "input_mem": "generated\\test_vectors\\sample_004_input.mem",
+      "conv4_mem": "generated\\test_vectors\\sample_004_conv4.mem"
+    },
+    {
+      "name": "sample_005",
+      "input_mem": "generated\\test_vectors\\sample_005_input.mem",
+      "conv4_mem": "generated\\test_vectors\\sample_005_conv4.mem"
+    },
+    {
+      "name": "sample_006",
+      "input_mem": "generated\\test_vectors\\sample_006_input.mem",
+      "conv4_mem": "generated\\test_vectors\\sample_006_conv4.mem"
+    },
+    {
+      "name": "sample_007",
+      "input_mem": "generated\\test_vectors\\sample_007_input.mem",
+      "conv4_mem": "generated\\test_vectors\\sample_007_conv4.mem"
+    }
+  ]
+}

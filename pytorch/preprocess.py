@@ -12,6 +12,14 @@ IMAGE_HEIGHT = 28
 IMAGE_PIXELS = IMAGE_WIDTH * IMAGE_HEIGHT
 COMBINED_FEATURE_PIXELS = IMAGE_PIXELS * 2
 DEFAULT_THRESHOLD = 128
+LEARNED_CONV_KERNEL = (
+    (-2, -1, 0),
+    (-1, 6, 1),
+    (0, 1, 2),
+)
+LEARNED_CONV_BIAS = -128
+LEARNED_CONV_SHIFT = 3
+LEARNED_CONV_RELU_EN = 1
 
 
 def threshold_u8_tensor(image: torch.Tensor, threshold: int = DEFAULT_THRESHOLD) -> torch.Tensor:
@@ -52,6 +60,42 @@ def sobel_u8_tensor(image: torch.Tensor) -> torch.Tensor:
     edge = torch.clamp(torch.abs(gx) + torch.abs(gy), 0, 255).to(torch.uint8)
     output[1:-1, 1:-1] = edge
 
+    return output.contiguous()
+
+
+def learned_conv3x3_u8_tensor(
+    image: torch.Tensor,
+    kernel: tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]] = LEARNED_CONV_KERNEL,
+    bias: int = LEARNED_CONV_BIAS,
+    shift: int = LEARNED_CONV_SHIFT,
+    relu_enable: int = LEARNED_CONV_RELU_EN,
+) -> torch.Tensor:
+    """Return a uint8 fixed-point 3x3 learned convolution output with zero borders."""
+    if not 0 <= shift <= 31:
+        raise ValueError("shift must be in range 0..31")
+
+    for row in kernel:
+        for coeff in row:
+            if not -128 <= coeff <= 127:
+                raise ValueError("kernel coefficients must fit in signed int8")
+
+    image_i32 = to_u8_image(image).to(torch.int32)
+    output = torch.zeros((IMAGE_HEIGHT, IMAGE_WIDTH), dtype=torch.uint8)
+    accum = torch.full((IMAGE_HEIGHT - 2, IMAGE_WIDTH - 2), int(bias), dtype=torch.int32)
+
+    for ky in range(3):
+        for kx in range(3):
+            coeff = int(kernel[ky][kx])
+            pixels = image_i32[ky : ky + IMAGE_HEIGHT - 2, kx : kx + IMAGE_WIDTH - 2]
+            accum = accum + (pixels * coeff)
+
+    if shift != 0:
+        accum = torch.bitwise_right_shift(accum, shift)
+
+    if relu_enable:
+        accum = torch.clamp(accum, min=0)
+
+    output[1:-1, 1:-1] = torch.clamp(accum, 0, 255).to(torch.uint8)
     return output.contiguous()
 
 

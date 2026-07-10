@@ -1,0 +1,12 @@
+rtl/threshold_core.sv
+rtl/sobel_core.sv
+rtl/image_preprocess_engine.sv
+rtl/image_sobel_engine.sv
+rtl/image_preprocess_buffered.sv
+rtl/image_preprocess_reg_block.sv
+rtl/image_preprocess_axi_lite.sv
+verif/preprocess_verif_pkg.sv
+verif/preprocess_sva.sv
+verif/uvm/preprocess_if.sv
+verif/uvm/preprocess_uvm_pkg.sv
+verif/uvm/top/preprocess_uvm_top.sv

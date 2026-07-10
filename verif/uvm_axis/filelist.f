@@ -1,0 +1,15 @@
++incdir+.
++incdir+verif/uvm
++incdir+verif/uvm_axis
+rtl/sobel_core.sv
+rtl/image_sobel_engine.sv
+rtl/axis_threshold_preprocess.sv
+rtl/axis_sobel_preprocess.sv
+rtl/axis_conv3x3_parallel_preprocess.sv
+rtl/axis_conv3x3_vector4_preprocess.sv
+rtl/axis_preprocess_vector_axi_lite.sv
+verif/uvm/preprocess_if.sv
+verif/uvm_axis/axis_stream_if.sv
+verif/uvm_axis/axis_vector_sva.sv
+verif/uvm_axis/vector_stream_uvm_pkg.sv
+verif/uvm_axis/top/vector_stream_uvm_top.sv

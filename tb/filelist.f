@@ -5,6 +5,15 @@ rtl/image_sobel_engine.sv
 rtl/image_preprocess_buffered.sv
 rtl/image_preprocess_reg_block.sv
 rtl/image_preprocess_axi_lite.sv
+rtl/axis_preprocess_pkg.sv
+rtl/axis_preprocess_if.sv
+rtl/axis_threshold_preprocess.sv
+rtl/axis_sobel_preprocess.sv
+rtl/axis_conv3x3_preprocess.sv
+rtl/axis_conv3x3_parallel_preprocess.sv
+rtl/axis_conv3x3_vector4_preprocess.sv
+rtl/axis_preprocess_axi_lite.sv
+rtl/axis_preprocess_vector_axi_lite.sv
 tb/image_preprocess_tb.sv
 tb/sobel_core_tb.sv
 tb/image_preprocess_engine_tb.sv
@@ -12,3 +21,11 @@ tb/image_sobel_engine_tb.sv
 tb/image_preprocess_buffered_tb.sv
 tb/image_preprocess_reg_block_tb.sv
 tb/image_preprocess_axi_lite_tb.sv
+tb/axis_threshold_preprocess_tb.sv
+tb/axis_sobel_preprocess_tb.sv
+tb/axis_conv3x3_preprocess_tb.sv
+tb/axis_conv3x3_parallel_preprocess_tb.sv
+tb/axis_conv3x3_vector4_preprocess_tb.sv
+tb/axis_preprocess_axi_lite_tb.sv
+tb/axis_preprocess_vector_axi_lite_tb.sv
+

@@ -1,9 +1,11 @@
+`timescale 1 ns / 100 ps
+
 // Module: image_preprocess_axi_lite
 // Description:
-//AXI4-Lite slave wrapper for the register-controlled preprocessing block.
+//   AXI4-Lite slave wrapper for the register-controlled preprocessing block.
 //
-//The image_preprocess_reg_block module owns the software-visible register
-//behavior. This wrapper only handles AXI4-Lite handshakes.
+// The image_preprocess_reg_block module owns the software-visible register
+// behavior. This wrapper only handles AXI4-Lite handshakes.
 
 module image_preprocess_axi_lite #(
     parameter int C_S_AXI_DATA_WIDTH = 32,

@@ -1,0 +1,14 @@
+rtl/threshold_core.sv
+rtl/sobel_core.sv
+rtl/image_preprocess_engine.sv
+rtl/image_sobel_engine.sv
+rtl/image_preprocess_buffered.sv
+rtl/image_preprocess_reg_block.sv
+rtl/image_preprocess_axi_lite.sv
+verif/preprocess_verif_pkg.sv
+verif/axi_lite_master_bfm.sv
+verif/preprocess_scoreboard.sv
+verif/preprocess_sva.sv
+verif/preprocess_coverage.sv
+verif/tests/test_axi_lite_directed_verif.sv
+verif/tests/test_axi_lite_control_coverage.sv

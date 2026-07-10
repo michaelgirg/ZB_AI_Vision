@@ -1,14 +1,16 @@
+`timescale 1 ns / 100 ps
+
 // Module: image_preprocess_buffered
 // Description:
-//Adds input/output image buffers around the preprocessing engines.
+//   Adds input/output image buffers around the preprocessing engines.
 //
-//This is the integration step before AXI-Lite. The external "host" ports are
-//intentionally simple so the future Zynq wrapper can map them to registers or
-//BRAM control without changing the timing-aware engine.
+// This is the integration step before AXI-Lite. The external "host" ports are
+// intentionally simple so the future Zynq wrapper can map them to registers or
+// BRAM control without changing the timing-aware engine.
 //
 // Mode:
-//0 = threshold
-//1 = Sobel
+//   0 = threshold
+//   1 = Sobel
 
 module image_preprocess_buffered #(
     parameter int DATA_WIDTH = 8,

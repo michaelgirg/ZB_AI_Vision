@@ -2,8 +2,8 @@
 
 // Module: image_preprocess_axi_lite_tb
 // Description:
-//Verifies the AXI4-Lite wrapper using the same register flow expected from
-//the ARM software.
+//   Verifies the AXI4-Lite wrapper using the same register flow expected from
+//   the ARM software.
 
 module image_preprocess_axi_lite_tb #(
     parameter int DATA_WIDTH = 8,

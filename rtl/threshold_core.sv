@@ -1,12 +1,14 @@
+`timescale 1 ns / 100 ps
+
 // Module: threshold_core
 // Description:
-//One-cycle registered threshold stage for 8-bit image pixels.
+// One-cycle registered threshold stage for 8-bit image pixels.
 //
-//Circuit:
-//pixel_in/threshold -> comparator/mux -> output register
+// Circuit:
+// pixel_in/threshold -> comparator/mux -> output register
 //
-//The AXI/BRAM wrapper will feed this core one pixel at a time after the
-//standalone datapath passes simulation against the Python golden vectors.
+// The AXI/BRAM wrapper will feed this core one pixel at a time after the
+// standalone datapath passes simulation against the Python golden vectors.
 
 module threshold_core #(
     parameter int DATA_WIDTH = 8

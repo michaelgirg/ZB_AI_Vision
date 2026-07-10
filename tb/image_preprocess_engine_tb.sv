@@ -2,7 +2,7 @@
 
 // Module: image_preprocess_engine_tb
 // Description:
-//Verifies the full-image preprocessing engine against Python golden vectors.
+// Verifies the full-image preprocessing engine against Python golden vectors.
 
 module image_preprocess_engine_tb #(
     parameter int DATA_WIDTH = 8,

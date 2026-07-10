@@ -1,0 +1,33 @@
+{
+  "checkpoint": "generated\\model\\vector_conv4_cnn.pt",
+  "filters": 4,
+  "epochs": 5,
+  "seed": 17,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.8489607391834258,
+      "test_accuracy": 0.9218
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.23775678583780924,
+      "test_accuracy": 0.9434
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.1747792165716489,
+      "test_accuracy": 0.9536
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.14060654513835907,
+      "test_accuracy": 0.9626
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.11785868296225865,
+      "test_accuracy": 0.9697
+    }
+  ]
+}
