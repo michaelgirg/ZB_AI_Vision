@@ -22,10 +22,8 @@ production gate is the larger `verif/uvm_axis` environment documented in
 production-register RAL and diagnostics, runtime arithmetic prediction,
 malformed-packet/reset recovery, protocol and datapath assertions, and a
 separate 100-seed run. Local Questa Starter compiles that environment but cannot
-execute its constrained-random/coverage workload. The complete eleven-test
-execution and merged coverage review passed on the licensed verification server;
-the results are recorded in `verif/uvm_axis/README.md` and
-`verif/coverage/vector_stream_coverage_plan.md`.
+execute its constrained-random/coverage workload; execution evidence therefore
+remains pending the licensed school server.
 
 The class-free local gate, `scripts/run_local_rtl_regression.ps1`, verifies two
 consecutive frames in every mode, the 1/2/4-lane sweep, three asynchronous CDC
