@@ -35,17 +35,31 @@ class axi_lite_monitor extends uvm_component;
         bit [AXI_ADDR_WIDTH-1:0] addr_q;
         bit [AXI_DATA_WIDTH-1:0] data_q;
         bit [(AXI_DATA_WIDTH/8)-1:0] strb_q;
+        axi_write_order_e order_q;
         axi_lite_item tr;
 
         aw_seen = 1'b0;
         w_seen = 1'b0;
+        order_q = AXI_WRITE_TOGETHER;
 
         forever begin
             @(posedge vif.clk);
             if (!vif.rstn) begin
                 aw_seen = 1'b0;
                 w_seen = 1'b0;
+                order_q = AXI_WRITE_TOGETHER;
             end else begin
+                if (!aw_seen && !w_seen) begin
+                    if ((vif.s_axi_awvalid && vif.s_axi_awready) &&
+                        (vif.s_axi_wvalid && vif.s_axi_wready)) begin
+                        order_q = AXI_WRITE_TOGETHER;
+                    end else if (vif.s_axi_awvalid && vif.s_axi_awready) begin
+                        order_q = AXI_WRITE_AW_FIRST;
+                    end else if (vif.s_axi_wvalid && vif.s_axi_wready) begin
+                        order_q = AXI_WRITE_W_FIRST;
+                    end
+                end
+
                 if (vif.s_axi_awvalid && vif.s_axi_awready) begin
                     aw_seen = 1'b1;
                     addr_q = vif.s_axi_awaddr;
@@ -64,9 +78,11 @@ class axi_lite_monitor extends uvm_component;
                     tr.data = data_q;
                     tr.strb = strb_q;
                     tr.resp = vif.s_axi_bresp;
+                    tr.observed_write_order = order_q;
                     ap.write(tr);
                     aw_seen = 1'b0;
                     w_seen = 1'b0;
+                    order_q = AXI_WRITE_TOGETHER;
                 end
             end
         end

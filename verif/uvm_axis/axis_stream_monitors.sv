@@ -32,7 +32,7 @@ class axis_stream_input_monitor extends uvm_component;
                 tr.last = vif.s_tlast;
                 tr.beat_index = beat_index;
                 ap.write(tr);
-                beat_index = tr.last ? 0 : (beat_index + 1);
+                beat_index = (beat_index == IMAGE_PIXELS - 1) ? 0 : (beat_index + 1);
             end
         end
     endtask

@@ -28,6 +28,8 @@ vivado/ip_repo*/
 vivado/*_vivado/
 vitis/
 hardware/*.xsa
+*.bit
+*.xsa
 
 # Generated datasets and local packages
 generated/data/

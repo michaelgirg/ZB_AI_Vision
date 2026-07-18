@@ -54,37 +54,35 @@ class axi_lite_driver extends uvm_driver #(axi_lite_item);
     endtask
 
     task drive_write(axi_lite_item tr);
-        bit aw_done;
-        bit w_done;
-
-        aw_done = 1'b0;
-        w_done = 1'b0;
-
         @(negedge vif.clk);
-        vif.s_axi_awaddr <= tr.addr;
-        vif.s_axi_awvalid <= 1'b1;
-        vif.s_axi_wdata <= tr.data;
-        vif.s_axi_wstrb <= tr.strb;
-        vif.s_axi_wvalid <= 1'b1;
         vif.s_axi_bready <= 1'b0;
 
-        while (!aw_done || !w_done) begin
-            @(posedge vif.clk);
-            if (vif.s_axi_awvalid && vif.s_axi_awready) begin
-                aw_done = 1'b1;
-            end
-            if (vif.s_axi_wvalid && vif.s_axi_wready) begin
-                w_done = 1'b1;
-            end
-
-            @(negedge vif.clk);
-            if (aw_done) begin
+        fork
+            begin : drive_aw_channel
+                repeat (tr.aw_delay_cycles) @(posedge vif.clk);
+                @(negedge vif.clk);
+                vif.s_axi_awaddr <= tr.addr;
+                vif.s_axi_awvalid <= 1'b1;
+                do begin
+                    @(posedge vif.clk);
+                end while (!(vif.s_axi_awvalid && vif.s_axi_awready));
+                @(negedge vif.clk);
                 vif.s_axi_awvalid <= 1'b0;
             end
-            if (w_done) begin
+
+            begin : drive_w_channel
+                repeat (tr.w_delay_cycles) @(posedge vif.clk);
+                @(negedge vif.clk);
+                vif.s_axi_wdata <= tr.data;
+                vif.s_axi_wstrb <= tr.strb;
+                vif.s_axi_wvalid <= 1'b1;
+                do begin
+                    @(posedge vif.clk);
+                end while (!(vif.s_axi_wvalid && vif.s_axi_wready));
+                @(negedge vif.clk);
                 vif.s_axi_wvalid <= 1'b0;
             end
-        end
+        join
 
         repeat (tr.response_stall_cycles) @(posedge vif.clk);
 
