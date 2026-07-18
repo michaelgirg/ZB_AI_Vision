@@ -280,6 +280,19 @@ module axis_preprocess_axi_lite_tb #(
             $error("PIXELS_PER_CYCLE mismatch: actual=%0d expected=1", read_value);
         end
 
+        axi_write(ADDR_THRESHOLD, 32'h0000_0011);
+        axi_read(ADDR_THRESHOLD, read_value);
+        if (read_value[7:0] !== 8'h11) begin
+            mismatch_count++;
+            $error("first repeated-address threshold read returned %02h", read_value[7:0]);
+        end
+        axi_write(ADDR_THRESHOLD, 32'h0000_0022);
+        axi_read(ADDR_THRESHOLD, read_value);
+        if (read_value[7:0] !== 8'h22) begin
+            mismatch_count++;
+            $error("second repeated-address threshold read returned stale value %02h", read_value[7:0]);
+        end
+
         axi_write(ADDR_THRESHOLD, C_S_AXI_DATA_WIDTH'(128));
         axi_write(ADDR_MODE, C_S_AXI_DATA_WIDTH'(preprocess_mode));
 

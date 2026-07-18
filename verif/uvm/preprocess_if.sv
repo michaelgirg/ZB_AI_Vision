@@ -36,4 +36,6 @@ interface preprocess_if #(
     logic                              s_axi_rvalid;
     logic                              s_axi_rready;
 
+    logic                              irq;
+
 endinterface

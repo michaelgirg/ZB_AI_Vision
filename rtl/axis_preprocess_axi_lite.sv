@@ -56,6 +56,8 @@ module axis_preprocess_axi_lite #(
 
     localparam int AXI_STRB_WIDTH = C_S_AXI_DATA_WIDTH / 8;
     localparam int AXIS_KEEP_WIDTH = C_AXIS_DATA_WIDTH / 8;
+    localparam logic [1:0] AXI_RESP_OKAY = 2'b00;
+    localparam logic [1:0] AXI_RESP_SLVERR = 2'b10;
 
     localparam logic [C_S_AXI_ADDR_WIDTH-1:0] ADDR_CTRL              = 8'h00;
     localparam logic [C_S_AXI_ADDR_WIDTH-1:0] ADDR_STATUS            = 8'h04;
@@ -88,14 +90,13 @@ module axis_preprocess_axi_lite #(
     logic [C_S_AXI_DATA_WIDTH-1:0]             wdata_r;
     logic [AXI_STRB_WIDTH-1:0]                 wstrb_r;
     logic                                      write_fire;
-    logic [C_S_AXI_DATA_WIDTH-1:0]             write_data_masked;
 
     logic                                      reg_write_en;
     logic [C_S_AXI_ADDR_WIDTH-1:0]             reg_write_addr;
     logic [C_S_AXI_DATA_WIDTH-1:0]             reg_write_data;
+    logic [AXI_STRB_WIDTH-1:0]                 reg_write_strb;
     logic                                      reg_read_en;
     logic [C_S_AXI_ADDR_WIDTH-1:0]             reg_read_addr;
-    logic [C_S_AXI_DATA_WIDTH-1:0]             reg_read_data;
 
     logic [DATA_WIDTH-1:0]                     threshold_r;
     logic [DATA_WIDTH-1:0]                     active_threshold_r;
@@ -173,8 +174,6 @@ module axis_preprocess_axi_lite #(
     logic                                      conv_m_tlast;
 
     assign rst = ~S_AXI_ARESETN;
-    assign S_AXI_BRESP = 2'b00;
-    assign S_AXI_RRESP = 2'b00;
 
     assign S_AXI_AWREADY = !aw_captured_r && !S_AXI_BVALID;
     assign S_AXI_WREADY = !w_captured_r && !S_AXI_BVALID;
@@ -185,10 +184,12 @@ module axis_preprocess_axi_lite #(
     assign reg_read_addr = S_AXI_ARADDR;
 
     assign start_pulse =
-        reg_write_en && (reg_write_addr == ADDR_CTRL) && reg_write_data[0] && !stream_busy;
+        reg_write_en && reg_write_strb[0] &&
+        (reg_write_addr == ADDR_CTRL) && reg_write_data[0] && !stream_busy;
 
     assign clear_done_pulse =
-        reg_write_en && (reg_write_addr == ADDR_CTRL) && reg_write_data[1];
+        reg_write_en && reg_write_strb[0] &&
+        (reg_write_addr == ADDR_CTRL) && reg_write_data[1];
 
     assign stream_busy = armed_r;
 
@@ -245,20 +246,100 @@ module axis_preprocess_axi_lite #(
         (armed_r && (active_mode_r == MODE_CONV3X3))   ? conv_m_tlast :
                                                           1'b0;
 
-    function automatic logic [C_S_AXI_DATA_WIDTH-1:0] apply_write_strobes(
+    function automatic logic [C_S_AXI_DATA_WIDTH-1:0] merge_write_data(
+        input logic [C_S_AXI_DATA_WIDTH-1:0] current_value,
         input logic [C_S_AXI_DATA_WIDTH-1:0] data,
         input logic [AXI_STRB_WIDTH-1:0] strobes
     );
-        logic [C_S_AXI_DATA_WIDTH-1:0] masked;
+        logic [C_S_AXI_DATA_WIDTH-1:0] merged;
 
-        masked = '0;
+        merged = current_value;
         for (int byte_index = 0; byte_index < AXI_STRB_WIDTH; byte_index++) begin
             if (strobes[byte_index]) begin
-                masked[byte_index*8 +: 8] = data[byte_index*8 +: 8];
+                merged[byte_index*8 +: 8] = data[byte_index*8 +: 8];
             end
         end
 
-        return masked;
+        return merged;
+    endfunction
+
+    function automatic logic is_write_address(
+        input logic [C_S_AXI_ADDR_WIDTH-1:0] addr
+    );
+        unique case (addr)
+            ADDR_CTRL,
+            ADDR_THRESHOLD,
+            ADDR_MODE,
+            ADDR_CONV_K00,
+            ADDR_CONV_K01,
+            ADDR_CONV_K02,
+            ADDR_CONV_K10,
+            ADDR_CONV_K11,
+            ADDR_CONV_K12,
+            ADDR_CONV_K20,
+            ADDR_CONV_K21,
+            ADDR_CONV_K22,
+            ADDR_CONV_BIAS,
+            ADDR_CONV_SHIFT,
+            ADDR_CONV_RELU_EN: return 1'b1;
+            default: return 1'b0;
+        endcase
+    endfunction
+
+    function automatic logic is_read_address(
+        input logic [C_S_AXI_ADDR_WIDTH-1:0] addr
+    );
+        unique case (addr)
+            ADDR_STATUS,
+            ADDR_THRESHOLD,
+            ADDR_IMAGE_PIXELS,
+            ADDR_PIXELS_PER_CYCLE,
+            ADDR_PROCESSING_CYCLES,
+            ADDR_MODE,
+            ADDR_CONV_K00,
+            ADDR_CONV_K01,
+            ADDR_CONV_K02,
+            ADDR_CONV_K10,
+            ADDR_CONV_K11,
+            ADDR_CONV_K12,
+            ADDR_CONV_K20,
+            ADDR_CONV_K21,
+            ADDR_CONV_K22,
+            ADDR_CONV_BIAS,
+            ADDR_CONV_SHIFT,
+            ADDR_CONV_RELU_EN: return 1'b1;
+            default: return 1'b0;
+        endcase
+    endfunction
+
+    function automatic logic [1:0] write_response(
+        input logic [C_S_AXI_ADDR_WIDTH-1:0] addr,
+        input logic [C_S_AXI_DATA_WIDTH-1:0] data,
+        input logic [AXI_STRB_WIDTH-1:0] strobes,
+        input logic busy
+    );
+        if ((addr[1:0] != 2'b00) || !is_write_address(addr)) begin
+            return AXI_RESP_SLVERR;
+        end
+        if (strobes == '0) begin
+            return AXI_RESP_OKAY;
+        end
+        if (busy) begin
+            if (addr == ADDR_CTRL) begin
+                return (strobes[0] && data[0]) ? AXI_RESP_SLVERR : AXI_RESP_OKAY;
+            end
+            return AXI_RESP_SLVERR;
+        end
+        return AXI_RESP_OKAY;
+    endfunction
+
+    function automatic logic [1:0] read_response(
+        input logic [C_S_AXI_ADDR_WIDTH-1:0] addr
+    );
+        if ((addr[1:0] != 2'b00) || !is_read_address(addr)) begin
+            return AXI_RESP_SLVERR;
+        end
+        return AXI_RESP_OKAY;
     endfunction
 
     function automatic logic [C_S_AXI_DATA_WIDTH-1:0] read_register(
@@ -350,9 +431,6 @@ module axis_preprocess_axi_lite #(
 
         return value;
     endfunction
-
-    assign write_data_masked = apply_write_strobes(wdata_r, wstrb_r);
-    assign reg_read_data = read_register(reg_read_addr);
 
     axis_threshold_preprocess #(
         .DATA_WIDTH(C_AXIS_DATA_WIDTH),
@@ -455,9 +533,11 @@ module axis_preprocess_axi_lite #(
             wdata_r <= '0;
             wstrb_r <= '0;
             S_AXI_BVALID <= 1'b0;
+            S_AXI_BRESP <= AXI_RESP_OKAY;
             reg_write_en <= 1'b0;
             reg_write_addr <= '0;
             reg_write_data <= '0;
+            reg_write_strb <= '0;
         end else begin
             reg_write_en <= 1'b0;
 
@@ -473,9 +553,12 @@ module axis_preprocess_axi_lite #(
             end
 
             if (write_fire) begin
-                reg_write_en <= 1'b1;
+                S_AXI_BRESP <= write_response(awaddr_r, wdata_r, wstrb_r, stream_busy);
+                reg_write_en <=
+                    (write_response(awaddr_r, wdata_r, wstrb_r, stream_busy) == AXI_RESP_OKAY);
                 reg_write_addr <= awaddr_r;
-                reg_write_data <= write_data_masked;
+                reg_write_data <= wdata_r;
+                reg_write_strb <= wstrb_r;
                 aw_captured_r <= 1'b0;
                 w_captured_r <= 1'b0;
                 S_AXI_BVALID <= 1'b1;
@@ -489,10 +572,14 @@ module axis_preprocess_axi_lite #(
         if (rst) begin
             S_AXI_RVALID <= 1'b0;
             S_AXI_RDATA <= '0;
+            S_AXI_RRESP <= AXI_RESP_OKAY;
         end else begin
             if (reg_read_en) begin
                 S_AXI_RVALID <= 1'b1;
-                S_AXI_RDATA <= reg_read_data;
+                S_AXI_RRESP <= read_response(reg_read_addr);
+                S_AXI_RDATA <=
+                    (read_response(reg_read_addr) == AXI_RESP_OKAY) ?
+                    read_register(reg_read_addr) : '0;
             end else if (S_AXI_RVALID && S_AXI_RREADY) begin
                 S_AXI_RVALID <= 1'b0;
             end
@@ -577,69 +664,77 @@ module axis_preprocess_axi_lite #(
             if (reg_write_en && !stream_busy) begin
                 unique case (reg_write_addr)
                     ADDR_THRESHOLD : begin
-                        threshold_r <= reg_write_data[DATA_WIDTH-1:0];
+                        if (reg_write_strb[0]) begin
+                            threshold_r <= reg_write_data[DATA_WIDTH-1:0];
+                        end
                     end
 
                     ADDR_MODE : begin
-                        unique case (reg_write_data[1:0])
-                            MODE_THRESHOLD,
-                            MODE_SOBEL,
-                            MODE_CONV3X3 : begin
-                                mode_r <= reg_write_data[1:0];
-                            end
+                        if (reg_write_strb[0]) begin
+                            unique case (reg_write_data[1:0])
+                                MODE_THRESHOLD,
+                                MODE_SOBEL,
+                                MODE_CONV3X3 : begin
+                                    mode_r <= reg_write_data[1:0];
+                                end
 
-                            default : begin
-                                mode_r <= MODE_THRESHOLD;
-                            end
-                        endcase
+                                default : begin
+                                    mode_r <= MODE_THRESHOLD;
+                                end
+                            endcase
+                        end
                     end
 
                     ADDR_CONV_K00 : begin
-                        conv_k00_r <= reg_write_data[7:0];
+                        if (reg_write_strb[0]) conv_k00_r <= reg_write_data[7:0];
                     end
 
                     ADDR_CONV_K01 : begin
-                        conv_k01_r <= reg_write_data[7:0];
+                        if (reg_write_strb[0]) conv_k01_r <= reg_write_data[7:0];
                     end
 
                     ADDR_CONV_K02 : begin
-                        conv_k02_r <= reg_write_data[7:0];
+                        if (reg_write_strb[0]) conv_k02_r <= reg_write_data[7:0];
                     end
 
                     ADDR_CONV_K10 : begin
-                        conv_k10_r <= reg_write_data[7:0];
+                        if (reg_write_strb[0]) conv_k10_r <= reg_write_data[7:0];
                     end
 
                     ADDR_CONV_K11 : begin
-                        conv_k11_r <= reg_write_data[7:0];
+                        if (reg_write_strb[0]) conv_k11_r <= reg_write_data[7:0];
                     end
 
                     ADDR_CONV_K12 : begin
-                        conv_k12_r <= reg_write_data[7:0];
+                        if (reg_write_strb[0]) conv_k12_r <= reg_write_data[7:0];
                     end
 
                     ADDR_CONV_K20 : begin
-                        conv_k20_r <= reg_write_data[7:0];
+                        if (reg_write_strb[0]) conv_k20_r <= reg_write_data[7:0];
                     end
 
                     ADDR_CONV_K21 : begin
-                        conv_k21_r <= reg_write_data[7:0];
+                        if (reg_write_strb[0]) conv_k21_r <= reg_write_data[7:0];
                     end
 
                     ADDR_CONV_K22 : begin
-                        conv_k22_r <= reg_write_data[7:0];
+                        if (reg_write_strb[0]) conv_k22_r <= reg_write_data[7:0];
                     end
 
                     ADDR_CONV_BIAS : begin
-                        conv_bias_r <= reg_write_data;
+                        conv_bias_r <= merge_write_data(
+                            conv_bias_r,
+                            reg_write_data,
+                            reg_write_strb
+                        );
                     end
 
                     ADDR_CONV_SHIFT : begin
-                        conv_shift_r <= reg_write_data[4:0];
+                        if (reg_write_strb[0]) conv_shift_r <= reg_write_data[4:0];
                     end
 
                     ADDR_CONV_RELU_EN : begin
-                        conv_relu_enable_r <= reg_write_data[0];
+                        if (reg_write_strb[0]) conv_relu_enable_r <= reg_write_data[0];
                     end
 
                     default : begin

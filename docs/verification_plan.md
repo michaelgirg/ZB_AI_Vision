@@ -13,6 +13,24 @@ SystemVerilog verification environment with:
 - mini UVM AXI4-Lite environment,
 - Questa UCDB coverage reports.
 
+## Production-v2 release flow
+
+The commands below preserve the original scalar verification flow. The current
+production gate is the larger `verif/uvm_axis` environment documented in
+`verif/uvm_axis/README.md` and launched by
+`verif/uvm_axis/run_server_regression.sh`. It contains eleven focused UVM tests,
+production-register RAL and diagnostics, runtime arithmetic prediction,
+malformed-packet/reset recovery, protocol and datapath assertions, and a
+separate 100-seed run. Local Questa Starter compiles that environment but cannot
+execute its constrained-random/coverage workload; execution evidence therefore
+remains pending the licensed school server.
+
+The class-free local gate, `scripts/run_local_rtl_regression.ps1`, verifies two
+consecutive frames in every mode, the 1/2/4-lane sweep, three asynchronous CDC
+ratios with partial-request and held-response reset aborts, assertion checks,
+UVM compilation, and eight independent Python-predicted frames. It does not
+launch Vivado.
+
 ## Verification Structure
 
 ```text
@@ -188,6 +206,7 @@ vcover merge uvm_combined.ucdb \
 vcover report uvm_combined.ucdb -details > uvm_coverage_report.txt
 cat uvm_coverage_report.txt
 ```
+
 
 ## What This Adds
 

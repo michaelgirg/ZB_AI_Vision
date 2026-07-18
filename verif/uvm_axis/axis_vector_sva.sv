@@ -11,6 +11,7 @@ module axis_vector_sva #(
 ) (
     input logic clk,
     input logic rstn,
+    input logic allow_malformed_input,
     input logic [DATA_WIDTH-1:0] s_tdata,
     input logic [KEEP_WIDTH-1:0] s_tkeep,
     input logic s_tvalid,
@@ -39,7 +40,7 @@ module axis_vector_sva #(
 
     property p_input_keep_full;
         @(posedge clk) disable iff (!rstn)
-        s_tvalid && s_tready |-> (s_tkeep == '1);
+        s_tvalid && s_tready && !allow_malformed_input |-> (s_tkeep == '1);
     endproperty
 
     assert property (p_output_stable_while_stalled)
@@ -55,9 +56,11 @@ module axis_vector_sva #(
             output_count <= 0;
         end else begin
             if (s_tvalid && s_tready) begin
-                assert (s_tlast == (input_count == IMAGE_PIXELS - 1))
-                    else $error("input TLAST mismatch at beat %0d", input_count);
-                input_count <= s_tlast ? 0 : (input_count + 1);
+                if (!allow_malformed_input) begin
+                    assert (s_tlast == (input_count == IMAGE_PIXELS - 1))
+                        else $error("input TLAST mismatch at beat %0d", input_count);
+                end
+                input_count <= (input_count == IMAGE_PIXELS - 1) ? 0 : (input_count + 1);
             end
             if (m_tvalid && m_tready) begin
                 assert (m_tlast == (output_count == IMAGE_PIXELS - 1))

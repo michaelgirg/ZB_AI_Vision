@@ -12,8 +12,14 @@ rtl/axis_sobel_preprocess.sv
 rtl/axis_conv3x3_preprocess.sv
 rtl/axis_conv3x3_parallel_preprocess.sv
 rtl/axis_conv3x3_vector4_preprocess.sv
+rtl/axis_conv3x3_scalable_preprocess.sv
+rtl/axis_conv3x3_scalable_benchmark_top.sv
 rtl/axis_preprocess_axi_lite.sv
 rtl/axis_preprocess_vector_axi_lite.sv
+rtl/axis_preprocess_vector_cdc.sv
+verif/formal/production_diag_sva.sv
+verif/formal/vector_core_safety_sva.sv
+verif/formal/cdc_bridge_sva.sv
 tb/image_preprocess_tb.sv
 tb/sobel_core_tb.sv
 tb/image_preprocess_engine_tb.sv
@@ -26,6 +32,8 @@ tb/axis_sobel_preprocess_tb.sv
 tb/axis_conv3x3_preprocess_tb.sv
 tb/axis_conv3x3_parallel_preprocess_tb.sv
 tb/axis_conv3x3_vector4_preprocess_tb.sv
+tb/axis_conv3x3_scalable_preprocess_tb.sv
 tb/axis_preprocess_axi_lite_tb.sv
 tb/axis_preprocess_vector_axi_lite_tb.sv
+tb/axis_preprocess_vector_cdc_tb.sv
 

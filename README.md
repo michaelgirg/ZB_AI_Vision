@@ -1,93 +1,63 @@
-# Zynq Edge-AI Vision Accelerator
+# ZB AI Vision Accelerator
 
-Hardware/software co-design project for FPGA-accelerated image preprocessing and quantized AI inference. The current Ultra96-V1 architecture combines AXI4-Lite configuration, AXI4-Stream/AXI DMA transport, and four selectable preprocessing modes:
+Reusable FPGA image-preprocessing IP for 28x28 grayscale AXI4-Stream frames.
+The design supports four selectable modes:
 
-| Mode | Operation | Stream output |
-| --- | --- | --- |
-| 0 | Binary threshold | One 8-bit pixel |
-| 1 | Sobel edge detection | One 8-bit edge value |
-| 2 | Learned INT8 3x3 convolution | One 8-bit feature |
-| 3 | Four learned INT8 3x3 filters in parallel | Four packed 8-bit features |
+| Mode | Operation | Output |
+| ---: | --- | --- |
+| 0 | Binary threshold | One 8-bit value per pixel |
+| 1 | Sobel magnitude | One 8-bit value per pixel |
+| 2 | Learned signed-INT8 3x3 convolution | One 8-bit activation |
+| 3 | Four learned signed-INT8 3x3 convolutions | Four packed 8-bit activations |
 
-The input and output interfaces use 32-bit AXI4-Stream beats. Scalar modes place data in `TDATA[7:0]`; vector mode packs four feature channels into `TDATA[31:0]`. `TLAST` marks the final pixel of each fixed 28x28 frame.
+The production wrapper adds AXI4-Lite control, AXI DMA integration, diagnostics,
+interrupt status, register-version discovery, and a dual-clock CDC bridge.
 
-## Results
+## Verification
 
-The final Ultra96-V1 MODE=3 checkpoint achieved:
+- Python predictor: 6,272/6,272 packed outputs matched.
+- Directed RTL: all four modes, backpressure, consecutive frames, and error paths pass.
+- Scalable convolution: 1-, 2-, and 4-filter configurations pass.
+- CDC stress: three asynchronous clock ratios, skewed AXI-Lite accesses,
+  reset-abort recovery, response flushing, and IRQ crossing pass.
+- UVM: 11 focused tests and seeds 1–100 pass with zero UVM errors/fatals,
+  assertion failures, or simulator errors.
+- Targeted functional coverage: 100%.
 
-- 784/784 pixels matched against Python golden vectors
-- 888-cycle selectable-top frame latency under no backpressure
-- 4/4 UVM tests passing with zero UVM errors, fatals, or assertion failures
-- 100% targeted stream and control functional coverage
-- post-implementation WNS `+4.413 ns`, TNS `0`, and zero failing endpoints
-- 10,359 LUTs, 11,903 registers, 3 BRAM tiles, and 45 DSP48E2 blocks
-- zero DRC errors or critical warnings
-
-The 45 DSPs comprise nine multipliers for MODE=2 and 36 parallel multipliers for the four-filter MODE=3 datapath. See [results.md](docs/results.md) and [ppa_comparison.md](docs/ppa_comparison.md) for the full verification and implementation record.
-
-## Repository Layout
-
-```text
-rtl/                 Synthesizable SystemVerilog datapaths and wrappers
-tb/                  Directed, self-checking RTL testbenches
-verif/               BFM/SVA tests plus AXI-stream mini-UVM environments
-pytorch/             Training, quantization, export, and golden models
-generated/           Exported weights, metadata, and deterministic test vectors
-software/zedboard/    Bare-metal C classifier and register driver checkpoint
-vivado/scripts/       Portable Ultra96-V1 IP packaging and build Tcl
-hardware/reports/     Selected timing, utilization, hierarchy, and DRC reports
-docs/                 Architecture, register map, timing, and verification notes
-```
-
-Generated Vivado/Vitis projects, XSA files containing local IP metadata, raw MNIST downloads, Python environments, simulator databases, and machine-specific files are intentionally excluded. The scripts below recreate the hardware checkpoint with the neutral `local.dev` IP vendor identifier.
-
-## Python Golden Pipeline
-
-Create an environment and install dependencies:
-
-```bash
-python -m venv .venv
-python -m pip install -r requirements.txt
-```
-
-The checked-in `generated/` artifacts make RTL verification reproducible without downloading or retraining MNIST. The scripts in `pytorch/` document the training and export path for the quantized classifiers and learned convolution kernels.
-
-## Questa Verification
-
-Run commands from the repository root. A basic directed compile is:
-
-```tcl
-vlib work
-vlog -sv -f tb/filelist.f
-vsim -c work.axis_preprocess_vector_axi_lite_tb -do "run -all; quit -f"
-```
-
-For the final AXI-stream UVM regression on a Questa installation with UVM enabled:
-
-```bash
-bash verif/uvm_axis/run_server_regression.sh
-```
-
-The regression covers all four modes, randomized backpressure, reset/control behavior, output scoreboarding, `TLAST`, and functional coverage. Details are in [verification_plan.md](docs/verification_plan.md).
-
-## Rebuild The Ultra96 Checkpoint
-
-Vivado 2025.2 and the Avnet Ultra96-V1 board definition are required. If the board files are not in Vivado's normal user store, set `XILINX_BOARD_REPO` to the directory containing the board definitions.
+Run the local checks from the repository root:
 
 ```powershell
-vivado -mode batch -source .\vivado\scripts\check_ultra96_v1_board.tcl
-vivado -mode batch -source .\vivado\scripts\package_axis_preprocess_vector_ip_ultra96.tcl
-vivado -mode batch -source .\vivado\scripts\create_ultra96_v1_dma_vec4_project.tcl
-vivado -mode batch -source .\vivado\scripts\run_ultra96_v1_dma_vec4_synth.tcl
-vivado -mode batch -source .\vivado\scripts\run_ultra96_v1_dma_vec4_bitstream_export.tcl
+powershell -ExecutionPolicy Bypass -File .\scripts\run_local_rtl_regression.ps1
 ```
 
-The creation script refuses to overwrite an existing generated project. Delete or rename that generated project directory deliberately before rebuilding.
+## Ultra96-V2 production flow
 
-## Architecture Notes
+The V2 flow targets the Avnet Ultra96-V2 ZU3EG device with a 100 MHz control
+clock and 150 MHz stream/data clock. It uses AMD/Xilinx XPM CDC primitives for
+single-bit and bundled-data crossings and emits reproducible Vivado reports.
 
-- [AXI4-Stream and DMA architecture](docs/axi_stream_dma_architecture.md)
-- [Learned convolution architecture](docs/learned_conv_architecture.md)
-- [Convolution latency audit](docs/convolution_latency_performance_audit.md)
-- [AXI-Lite register map](docs/register_map.md)
-- [Timing closure](docs/timing_closure.md)
+Set `ULTRA96_BOARD_REPO` to the board-store directory on the build machine,
+then run the V2 Tcl scripts through Vivado 2025.2. The project creator refuses
+to overwrite an existing generated project.
+
+The control/register definitions are documented in
+[`docs/register_map.md`](docs/register_map.md). Final production evidence is
+summarized in [`docs/production_v2_release_status.md`](docs/production_v2_release_status.md).
+
+## Repository layout
+
+```text
+rtl/        synthesizable SystemVerilog datapaths and CDC wrapper
+tb/         directed self-checking RTL testbenches
+verif/      assertions, BFMs, UVM environment, and coverage
+generated/  compact deterministic models, headers, and test vectors
+pytorch/    quantization and golden-model utilities
+vivado/     packaging and Ultra96-V2 build Tcl
+scripts/    local regression and predictor utilities
+docs/       register map, verification, architecture, and release notes
+```
+
+Generated Vivado/Vitis projects, simulator databases, caches, logs, local
+machine settings, bitstreams, and XSA files are intentionally excluded from
+the source repository. Release binaries are distributed separately with their
+SHA256 manifest.

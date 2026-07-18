@@ -11,5 +11,8 @@ rtl/axis_preprocess_vector_axi_lite.sv
 verif/uvm/preprocess_if.sv
 verif/uvm_axis/axis_stream_if.sv
 verif/uvm_axis/axis_vector_sva.sv
+verif/uvm_axis/axi_lite_vector_sva.sv
+verif/formal/vector_core_safety_sva.sv
+verif/formal/production_diag_sva.sv
 verif/uvm_axis/vector_stream_uvm_pkg.sv
 verif/uvm_axis/top/vector_stream_uvm_top.sv

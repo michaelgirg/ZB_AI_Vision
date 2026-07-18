@@ -64,3 +64,62 @@ baseline modes, wide register fields, and defensive RTL paths outside this
 focused MODE=3 test plan. It is recorded as a secondary metric, not a release
 gate. The closure metric is 100% of the targeted functional bins plus zero
 scoreboard mismatches, UVM errors/fatals, and assertion failures.
+
+## Production-v2 Expansion
+
+The July 10 percentage remains historical evidence only. The production-v2
+eleven-test regression adds bins and crosses for all AXI write orderings and
+strobes, repeated-address read freshness, access responses, RAL register and
+field behavior, frame/error/stall diagnostics, interrupt enable/status/IRQ,
+malformed packets, reset recovery, randomized runtime prediction, and legal
+recovery after errors. Production-v2 coverage numbers are intentionally pending
+until the licensed server executes and merges all eleven UCDBs plus the recorded
+100-seed predictor run.
+
+### July 17 production-v2 randomized closure
+
+After correcting the sticky-`done` assertion, the runtime predictor cleanly
+completed all 100 recorded seeds (1 through 100). Every seed reached
+`RANDOM_PREDICTOR_PASS` with zero UVM errors and zero UVM fatals. The merged
+assertion report had zero failures, including 100 passes of the corrected
+done-causality property, and coverage reporting ended with zero errors and zero
+warnings.
+
+The random-only merged report measured 68.33% covergroup coverage and 35.78%
+filtered instance coverage. These are supporting stress metrics, not the
+production closure metric: protocol-error, RAL, diagnostics, malformed-packet,
+and reset scenarios are intentionally outside the randomized predictor seed
+family. Final production-v2 coverage review remains pending the clean eleven-test
+UCDB merge.
+
+### July 17 eleven-test clean pass and gap analysis
+
+The corrected regression passed all eleven tests with zero UVM errors/fatals,
+zero simulator errors, zero assertion failures, and a successful UCDB merge.
+Merged covergroup coverage was 93.09%: output-stream coverage was 100%, while
+control coverage was 86.19%. Every address, strobe, response, write-ordering,
+and response cross closed.
+
+The 17 missing control bins were all diagnostic-state samples: individual and
+combined sticky error/interrupt values, three mixed interrupt-enable masks, and
+error-count values one and saturated. The closure update now:
+
+- reads packet, rejected-write, rejected-read, and combined sticky causes;
+- samples done+packet and done+access interrupt combinations, then isolates the
+  individual W1C causes;
+- checks error counts at zero, one, two, and three events;
+- writes all individual, mixed, all-enabled, and disabled interrupt masks;
+- defines combined status as one meaningful bin without overlapping individual
+  status bins; and
+- excludes only `ERROR_COUNT == 0xffff_ffff` from dynamic functional coverage,
+  because reaching it requires 2^32 production error events. Saturation remains
+  covered by the `production_diag_sva` safety property/formal obligation.
+
+The Questa `vopt-13408` warning only reports that code coverage cannot be
+instrumented for some DUs/packages/classes; the run had `UVM_WARNING : 0`. Raw
+filtered instance coverage (50.51%) still includes inactive baseline modes,
+interface toggles, defensive paths, and tool instrumentation limits, so it is a
+review metric rather than the functional release gate. The targeted closure
+rerun passed with 100.00% total covergroup coverage. Both covergroup instances,
+every targeted coverpoint, and every targeted cross report 100%; all assertion
+failure counts are zero.

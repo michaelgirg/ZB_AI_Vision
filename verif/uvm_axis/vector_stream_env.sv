@@ -11,6 +11,10 @@ class vector_stream_env extends uvm_env;
     vector_stream_scoreboard scoreboard;
     vector_stream_coverage stream_coverage;
     vector_control_coverage control_coverage;
+    vector_dynamic_predictor predictor;
+    preprocess_reg_block regmodel;
+    preprocess_reg_adapter reg_adapter;
+    uvm_reg_predictor #(axi_lite_item) reg_predictor;
 
     function new(string name = "vector_stream_env", uvm_component parent = null);
         super.new(name, parent);
@@ -26,6 +30,13 @@ class vector_stream_env extends uvm_env;
         scoreboard = vector_stream_scoreboard::type_id::create("scoreboard", this);
         stream_coverage = vector_stream_coverage::type_id::create("stream_coverage", this);
         control_coverage = vector_control_coverage::type_id::create("control_coverage", this);
+        predictor = vector_dynamic_predictor::type_id::create("predictor", this);
+        regmodel = preprocess_reg_block::type_id::create("regmodel");
+        regmodel.build();
+        regmodel.lock_model();
+        regmodel.reset();
+        reg_adapter = preprocess_reg_adapter::type_id::create("reg_adapter");
+        reg_predictor = new("reg_predictor", this);
     endfunction
 
     function void connect_phase(uvm_phase phase);
@@ -33,6 +44,13 @@ class vector_stream_env extends uvm_env;
         input_monitor.ap.connect(scoreboard.source_export);
         output_monitor.ap.connect(scoreboard.sink_export);
         output_monitor.ap.connect(stream_coverage.analysis_export);
+        input_monitor.ap.connect(predictor.input_export);
+        ctrl_agent.monitor.ap.connect(predictor.ctrl_export);
+        predictor.expected_ap.connect(scoreboard.expected_export);
         ctrl_agent.monitor.ap.connect(control_coverage.analysis_export);
+        regmodel.default_map.set_sequencer(ctrl_agent.sequencer, reg_adapter);
+        reg_predictor.map = regmodel.default_map;
+        reg_predictor.adapter = reg_adapter;
+        ctrl_agent.monitor.ap.connect(reg_predictor.bus_in);
     endfunction
 endclass
