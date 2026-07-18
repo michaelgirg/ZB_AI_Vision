@@ -5,10 +5,10 @@
 | Area | Result |
 | --- | --- |
 | Python predictor | 6,272/6,272 outputs matched |
-| Directed RTL | Modes 0-3, backpressure, consecutive frames, and error paths pass |
+| Directed RTL | Modes 0–3, backpressure, consecutive frames, and error paths pass |
 | Scalable convolution | 1-, 2-, and 4-filter configurations pass |
 | CDC/reset stress | Three asynchronous clock ratios and reset-abort recovery pass |
-| UVM | 11 focused tests plus a 100-seed randomized predictor run pass with zero UVM errors/fatals or assertion failures |
+| UVM | 11 focused tests and seeds 1–100 pass with zero UVM errors/fatals or assertion failures |
 | Functional coverage | 100% targeted coverage |
 
 ## Ultra96-V2 implementation evidence

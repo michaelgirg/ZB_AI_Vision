@@ -157,7 +157,7 @@ class vector_control_coverage extends uvm_subscriber #(axi_lite_item);
             bins multiple = {[2:32'hffff_fffe]};
             // Reaching 0xffff_ffff requires 2^32 production error events.
             // Dynamic simulation covers zero/one/multiple; saturation remains
-            // an assertion obligation in production_diag_sva.
+            // an assertion/formal obligation in production_diag_sva.
             ignore_bins saturated = {32'hffff_ffff};
         }
         cp_irq: coverpoint irq;

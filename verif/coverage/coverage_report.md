@@ -37,7 +37,7 @@ Control coverage test: PASS
 Assertion failures: 0
 ```
 
-The first control test also checked the threshold boundary and invalid-mode
+The first control test also proved the threshold boundary and invalid-mode
 coverage path, but it instantiated its own AXI coverage collector and lowered
 the aggregate covergroup percentage because that focused test was not intended
 to repeat every AXI access scenario. The test was then adjusted so:

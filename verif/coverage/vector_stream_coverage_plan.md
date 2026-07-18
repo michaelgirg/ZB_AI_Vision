@@ -72,8 +72,9 @@ eleven-test regression adds bins and crosses for all AXI write orderings and
 strobes, repeated-address read freshness, access responses, RAL register and
 field behavior, frame/error/stall diagnostics, interrupt enable/status/IRQ,
 malformed packets, reset recovery, randomized runtime prediction, and legal
-recovery after errors. This plan originally preceded the licensed-server run;
-the final eleven-test coverage results are recorded below.
+recovery after errors. Production-v2 coverage numbers are intentionally pending
+until the licensed server executes and merges all eleven UCDBs plus the recorded
+100-seed predictor run.
 
 ### July 17 production-v2 randomized closure
 
@@ -88,7 +89,8 @@ The random-only merged report measured 68.33% covergroup coverage and 35.78%
 filtered instance coverage. These are supporting stress metrics, not the
 production closure metric: protocol-error, RAL, diagnostics, malformed-packet,
 and reset scenarios are intentionally outside the randomized predictor seed
-family. The subsequent clean eleven-test UCDB merge is recorded below.
+family. Final production-v2 coverage review remains pending the clean eleven-test
+UCDB merge.
 
 ### July 17 eleven-test clean pass and gap analysis
 
@@ -110,9 +112,8 @@ error-count values one and saturated. The closure update now:
 - defines combined status as one meaningful bin without overlapping individual
   status bins; and
 - excludes only `ERROR_COUNT == 0xffff_ffff` from dynamic functional coverage,
-  because reaching it requires 2^32 production error events. Saturation is
-  checked by the `production_diag_sva` simulation assertion; a formal proof is
-  not claimed.
+  because reaching it requires 2^32 production error events. Saturation remains
+  covered by the `production_diag_sva` safety property/formal obligation.
 
 The Questa `vopt-13408` warning only reports that code coverage cannot be
 instrumented for some DUs/packages/classes; the run had `UVM_WARNING : 0`. Raw

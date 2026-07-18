@@ -61,8 +61,7 @@ UCDB merge. After targeted diagnostic-state sampling, the closure rerun reports
 100.00% total covergroup coverage: both stream and control instances, every
 targeted coverpoint, and every targeted cross are 100%. Illegal protocol bins
 remain unhit as required. The sole ignored dynamic bin is the 2^32-event
-counter-saturation state, which remains a simulation-assertion obligation; no
-formal proof is claimed.
+counter-saturation state, which remains an assertion/formal obligation.
 
 The RAL model represents `ERROR_STATUS` and `INT_STATUS` as UVM `RW` fields for
 compatibility with UVM 1.1d, whose register package rejects `W1C` as an access

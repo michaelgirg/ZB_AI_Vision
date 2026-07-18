@@ -51,7 +51,7 @@ counters, and interrupts occupy previously unused space beginning at `0x70`.
 
 Frame dimensions remain compile-time parameters in v2. Runtime width/height
 registers are intentionally deferred because every current line buffer is sized
-for a fixed frame geometry.
+and formally bounded for a fixed frame geometry.
 
 ## Indirect vector configuration
 
