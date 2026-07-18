@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TEXT_SUFFIXES = {".f", ".json", ".md", ".ps1", ".py", ".sh", ".sv", ".tcl", ".yml", ".yaml"}
+LINE_ORIENTED_HASH_SUFFIXES = {".h", ".mem"}
 HASH_MANIFEST = ROOT / "generated" / "test_vectors" / "manifest.json"
 VECTOR_MANIFEST = ROOT / "generated" / "test_vectors" / "vector_conv4_manifest.json"
 REGISTER_DOC = ROOT / "docs" / "register_map.md"
@@ -25,7 +26,13 @@ def repository_path(value: str) -> Path:
 
 
 def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    data = path.read_bytes()
+    if path.suffix in LINE_ORIENTED_HASH_SUFFIXES:
+        # The checked-in manifest predates Linux CI and records CRLF byte
+        # hashes. Canonicalize line-oriented artifacts so a checkout's EOL
+        # policy cannot create a false integrity failure.
+        data = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n").replace(b"\n", b"\r\n")
+    return hashlib.sha256(data).hexdigest()
 
 
 def check_text_hygiene(errors: list[str]) -> None:
