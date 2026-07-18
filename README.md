@@ -56,7 +56,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\run_local_rtl_regression.ps1
 
 ## Release artifacts
 
-The [Ultra96-V2 production release candidate](https://github.com/michaelgirg/ZB_AI_Vision/releases/tag/ultra96-v2-rc1)
+The [Ultra96-V2 production release candidate](https://github.com/michaelgirg/zynq-ultra96-ai-vision-accelerator/releases/tag/ultra96-v2-rc1)
 contains the bitstream, bitstream-inclusive XSA, and SHA256 manifest. Generated
 Vivado/Vitis projects, simulator databases, logs, local machine settings, and
 release binaries are excluded from the source tree.
